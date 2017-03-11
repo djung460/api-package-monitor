@@ -8,7 +8,8 @@ urlpatterns = [
         url(r'^api/signup$',views.signup),
         url(r'^api/acknowledge$',views.acknowledge),
         url(r'^api/requestcheck$',views.requestcheck),
-        
+        url(r'^api/viewlog',views.viewlog),
+
         # package monitor facing
         url(r'^api/isack$',views.isack),
         url(r'^api/requestopen$',views.requestopen),

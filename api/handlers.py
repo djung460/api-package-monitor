@@ -47,6 +47,18 @@ def login(username, password):
     except PackageMonitor.DoesNotExist:
         return False
 
+def getlog(username):
+    """
+    Handles retrieving the request lof associated with the user
+    """
+    try:
+        reqs = RequestLog.objects.filter(username=username).order_by('-datetime')
+
+        return reqs
+    except RequestLog.DoesNotExist:
+        return None
+
+
 def requestcheck(username, password, deviceid):
     """
     Handles checking to see if there is a pending request
@@ -86,7 +98,7 @@ def approverequest(username, password, deviceid, approved):
         rl.wasgranted = approved
         rl.save()
     except PackageMonitor.DoesNotExist:
-        return false
+        return False
 
 def getprevreqs(username, password, deviceid):
     """

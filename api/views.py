@@ -1,12 +1,9 @@
-from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from api.models import PackageMonitor
-from api.serializers import PackageMonitorSerializer
 from api import handlers
-import random
+from api.serializers import RequestLogSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -55,17 +52,38 @@ def acknowledge(request):
     """
     Acknowledge a request to open, can either accept or deny
     Android facing
+
+    Returns false if there was an error
     """
     if request.method != 'PUT':
         return HttpResponse(status=401)
 
     data = JSONParser().parse(request)
 
-    approverequest(
+    res = handlers.approverequest(
             data['username'],
             data['password'],
             data['deviceid'],
             data['approved'])
+
+    return JSONResponse(res)
+
+@csrf_exempt
+def viewlog(request):
+    """
+    View request log of a given user
+    Android facing
+    """
+    if request.method != 'PUT':
+        return HttpResponse(status=401)
+
+    data = JSONParser().parse(request)
+
+    reqs = handlers.getlog(data['username'])
+
+    serialreqs = RequestLogSerializer(reqs,many=True)
+
+    return JSONResponse(serialreqs.data)
 
 @csrf_exempt
 def requestcheck(request):
@@ -78,10 +96,12 @@ def requestcheck(request):
 
     data = JSONParser().parse(request)
 
-    handlers.requestcheck(
+    hasreq = handlers.requestcheck(
             data['username'],
             data['password'],
             data['deviceid'])
+
+    return JSONResponse(hasreq)
 
 
 
