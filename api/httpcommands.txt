@@ -1,0 +1,22 @@
+CALLED FROM ANDROID
+Register a new user:
+http --json PUT http://127.0.0.1:8000/api/signup username=TestUser password=Test1234 phonenum=6041234567 deviceid=1234
+
+Login:
+http --json PUT http://127.0.0.1:8000/api/login username=TestUser password=Test1234
+
+Acknowledge (True):
+http --json PUT http://127.0.0.1:8000/api/login username=TestUser password=Test1234 deviceid=1234 approved=True
+
+Acknowledge (False):
+http --json PUT http://127.0.0.1:8000/api/login username=TestUser password=Test1234 deviceid=1234 approved=False
+
+CALLED FROM DEVICE
+Check if request acknowledged:
+http --json PUT http://127.0.0.1:8000/api/isack deviceid=1234
+
+Check if request approved:
+http --json PUT http://127.0.0.1:8000/api/isapproved deviceid=1234
+
+Request to open:
+http --json PUT http://127.0.0.1:8000/api/requestopen deviceid=1234 image=as

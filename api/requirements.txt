@@ -1,0 +1,11 @@
+Called from Android
+    login user
+    signup user
+    acknowledge request
+    check box status
+    take photo
+
+Called from device
+    request to open
+    check if approved
+    update box status ie. closed
