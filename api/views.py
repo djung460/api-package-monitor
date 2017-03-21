@@ -3,17 +3,19 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from api import handlers
-from api.serializers import RequestLogSerializer
+from api.serializers import RequestLogSerializer, DeviceSerializer
 
 
 class JSONResponse(HttpResponse):
     """
     HttpResponse that renders its content to JSON
     """
+
     def __init__(self, data, **kwargs):
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
+
 
 @csrf_exempt
 def signup(request):
@@ -26,10 +28,8 @@ def signup(request):
 
     data = JSONParser().parse(request)
 
-    if handlers.signup(data['username'],data['password'],data['phonenum'],data['deviceid']):
-        return HttpResponse(status=201)
-    else:
-        return HttpResponse(status=401)
+    return JSONResponse(handlers.signup(data['username'], data['password'], data['phonenum'], data['deviceid']))
+
 
 @csrf_exempt
 def login(request):
@@ -42,10 +42,8 @@ def login(request):
 
     data = JSONParser().parse(request)
 
-    if handlers.login(data['username'],data['password']):
-        return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=401)
+    return JSONResponse(handlers.login(data['username'], data['password']))
+
 
 @csrf_exempt
 def acknowledge(request):
@@ -60,13 +58,15 @@ def acknowledge(request):
 
     data = JSONParser().parse(request)
 
+    approved = data['approved'] == 'true' or data['approved'] == 'True'
+
     res = handlers.approverequest(
-            data['username'],
-            data['password'],
-            data['deviceid'],
-            data['approved'])
+        data['username'],
+        data['password'],
+        approved)
 
     return JSONResponse(res)
+
 
 @csrf_exempt
 def viewlog(request):
@@ -81,12 +81,13 @@ def viewlog(request):
 
     reqs = handlers.getlog(data['username'])
 
-    serialreqs = RequestLogSerializer(reqs,many=True)
+    serialreqs = RequestLogSerializer(reqs, many=True)
 
     return JSONResponse(serialreqs.data)
 
+
 @csrf_exempt
-def requestcheck(request):
+def getstatus(request):
     """
     Check if there is a pending request
     Android facing
@@ -96,13 +97,13 @@ def requestcheck(request):
 
     data = JSONParser().parse(request)
 
-    hasreq = handlers.requestcheck(
-            data['username'],
-            data['password'],
-            data['deviceid'])
+    device = handlers.getstatus(
+        data['username'],
+        data['password'])
 
-    return JSONResponse(hasreq)
+    serialdevice = DeviceSerializer(device)
 
+    return JSONResponse(serialdevice.data)
 
 
 @csrf_exempt
@@ -116,8 +117,12 @@ def isack(request):
 
     data = JSONParser().parse(request)
 
-    print("Checking if acked");
-    return JSONResponse(handlers.isacknowledged(data['deviceid']))
+    print("Checking if acked")
+    if handlers.isacknowledged(data['deviceid']):
+        return JSONResponse('{ttttttttttttttttt}')
+    else:
+        return JSONResponse('{fffffffffffffffff}')
+
 
 @csrf_exempt
 def requestopen(request):
@@ -130,10 +135,7 @@ def requestopen(request):
 
     data = JSONParser().parse(request)
 
-    if handlers.requestopen(data['deviceid'],data['image']):
-        return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=401) 
+    return JSONResponse(handlers.requestopen(data['deviceid'], data['image'], data['isnew'], data['done']))
 
 
 @csrf_exempt
@@ -147,4 +149,7 @@ def isapproved(request):
 
     data = JSONParser().parse(request)
 
-    return JSONResponse(handlers.isapproved(data['deviceid'])) 
+    if handlers.isapproved(data['deviceid']):
+        return JSONResponse('{ttttttttttttttttt}')
+    else:
+        return JSONResponse('{fffffffffffffffff}')

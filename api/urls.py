@@ -7,7 +7,7 @@ urlpatterns = [
         url(r'^api/login$',views.login),
         url(r'^api/signup$',views.signup),
         url(r'^api/acknowledge$',views.acknowledge),
-        url(r'^api/requestcheck$',views.requestcheck),
+        url(r'^api/getstatus',views.getstatus),
         url(r'^api/viewlog',views.viewlog),
 
         # package monitor facing
