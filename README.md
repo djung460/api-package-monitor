@@ -8,6 +8,9 @@ API for our Home Package Monitor project
 http --json put http://host/api/signup username=username password=password phonenum=phonenumber deviceid=deviceid
 #### Login
 http --json put http://host/api/login username=username password=password
+#### Update User's Phonenumber
+http --json put http://138.197.213.158/api/updatenumber username=username password=password phonenumber=7788675309
+
 #### Acknowledge - Acknowledges a request
 http --json put http://host/api/acknowledge username=username password=password deviceid=deviceid approved=boolean
 #### Check pending - Returns device info for if the device has a pending request (Should be called before getstatus)
